@@ -1,5 +1,8 @@
 package com.example.beastmode2;
 
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +38,9 @@ import android.widget.Toast;
 
 import com.beastmode2.classes.BeastImage;
 import com.beastmode2.classes.Stream;
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class ViewStreams extends Activity{
     private TextView streamsOutput;
@@ -70,31 +75,26 @@ public class ViewStreams extends Activity{
 	}
 	
 	public void postData() {
-	    // Create a new HttpClient and Post Header
-	    HttpClient httpclient = new DefaultHttpClient();
-	    HttpPost httppost = new HttpPost("http://www.ericissunny.appspot.com/streamservlet");
-
 	    try {
-	        // Add your data
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-	        nameValuePairs.add(new BasicNameValuePair("type", "all"));
-	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-	        HttpResponse response = httpclient.execute(httppost);
+		URL url = new URL("http://ericissunny.appspot.com/streamservlet?type=all");
+		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.connect();
+		String string = CharStreams.toString( new InputStreamReader( connection.getInputStream(), "UTF-8" ) );
+		Gson gson = new Gson();
+		Map<Stream, List<BeastImage>> result = new HashMap<Stream, List<BeastImage>>();
 
-	        Gson gson = new Gson();
-			Map<Stream, List<BeastImage>> result = new HashMap<Stream, List<BeastImage>>();
-			
-	        // Execute HTTP Post Request
-	        result = gson.fromJson(EntityUtils.toString(response.getEntity()), HashMap.class);
+		result = gson.fromJson(string, new TypeToken<Map<Stream, List<BeastImage>>>(){}.getType() );
+
 	        Iterator it = result.entrySet().iterator();
 
 	        int count = 0;
 	        while (it.hasNext()) {
 	            Map.Entry pairs = (Map.Entry)it.next();
-
-	            Stream str = gson.fromJson(pairs.getKey().toString(), Stream.class);
+	            
+	            Stream str = (Stream) pairs.getKey();
 	            String urlString = str.coverImageUrl;
-	            URL url;
+
 	            try { url = new URL(urlString); } catch (Exception e) {
 	            	url = new URL("http://students.ou.edu/A/Jesus.I.Avila-1/white.jpg"); }
 	            
