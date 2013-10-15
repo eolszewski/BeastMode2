@@ -1,5 +1,7 @@
 package com.example.beastmode2;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +11,15 @@ import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-
-    public ImageAdapter(Context c) {
+    private ArrayList <ImageView> images;
+    
+    public ImageAdapter(Context c, ArrayList<ImageView> images) {
         mContext = c;
+        this.images = images;
     }
 
     public int getCount() {
-        return ViewStreams.images.size();
+        return this.images.size();
     }
 
     public Object getItem(int position) {
@@ -30,7 +34,7 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
         if (convertView == null) {  // if it's not recycled, initialize some attributes
-            imageView = ViewStreams.images.get(position);
+            imageView = this.images.get(position);
             imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);

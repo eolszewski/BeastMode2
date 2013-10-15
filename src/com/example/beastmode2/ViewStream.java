@@ -37,29 +37,26 @@ import com.beastmode2.classes.BeastImage;
 import com.beastmode2.classes.Stream;
 import com.google.gson.Gson;
 
-public class ViewStreams extends Activity{
+public class ViewStream extends Activity{
     private TextView streamsOutput;
     private LinearLayout main;
     static ArrayList<ImageView> images;
-    static ArrayList imageIDs;
+    static ArrayList imageURLs;
+    String streamID;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
+    	Intent myIntent= getIntent();
+    	streamID = myIntent.getStringExtra("id"); 
     	images = new ArrayList<ImageView>();
-    	imageIDs = new ArrayList();
+    	imageURLs = new ArrayList();
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewstreams);
+		setContentView(R.layout.viewstream);
 		postData();
-		GridView gridview = (GridView) findViewById(R.id.gridview);
+		GridView gridview = (GridView) findViewById(R.id.gridview2);
 	    gridview.setAdapter(new ImageAdapter(this, images));
 
-	    gridview.setOnItemClickListener(new OnItemClickListener() {
-	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	        	Intent myIntent = new Intent(getBaseContext(), ViewStream.class);
-	        	myIntent.putExtra("id",String. valueOf((imageIDs.get(position))));
-	        	startActivity(myIntent);    
-	        }
-	    });
+
 	}
 
 	@Override
@@ -76,8 +73,9 @@ public class ViewStreams extends Activity{
 
 	    try {
 	        // Add your data
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-	        nameValuePairs.add(new BasicNameValuePair("type", "all"));
+	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	        nameValuePairs.add(new BasicNameValuePair("type", "single"));
+	        nameValuePairs.add(new BasicNameValuePair("id", streamID));
 	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 	        HttpResponse response = httpclient.execute(httppost);
 
@@ -92,22 +90,29 @@ public class ViewStreams extends Activity{
 	        while (it.hasNext()) {
 	            Map.Entry pairs = (Map.Entry)it.next();
 
-	            Stream str = gson.fromJson(pairs.getKey().toString(), Stream.class);
-	            String urlString = str.coverImageUrl;
-	            URL url;
-	            try { url = new URL(urlString); } catch (Exception e) {
-	            	url = new URL("http://students.ou.edu/A/Jesus.I.Avila-1/white.jpg"); }
-	            
-	            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-	            ImageView imageView = new ImageView(this);
-	            imageView.setImageBitmap(bmp);
-	            images.add(imageView);
-	            imageIDs.add(str.id);
-	            count++;
+	            List imagesArr = (List)pairs.getValue();
+	            for(Object o : imagesArr){
+	            	String s = "";
+	            	s = o.toString().replace("{", "").replace("}", "");
+	            	List<String> imageList = Arrays.asList(s.split(", "));
+	            	
+		            //BeastImage img = gson.fromJson(imgs.get(0).toString(), BeastImage.class);
+		            String urlString = imageList.get(4).replace("bkUrl=", "");
+		            URL url;
+		            try { url = new URL(urlString); } catch (Exception e) {
+		            	url = new URL("http://students.ou.edu/A/Jesus.I.Avila-1/white.jpg"); }
+		            
+		            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+		            ImageView imageView = new ImageView(this);
+		            imageView.setImageBitmap(bmp);
+		            images.add(imageView);
+		            //imageURLs.add(str.url);
+		            count++;
+		        }
 	            it.remove(); 
-	        }
-	        
 
+	        }
+	
 	    } catch (Exception e) {
 	    	//streamsOutput.setText(e.toString());
 	        // TODO Auto-generated catch block

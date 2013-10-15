@@ -15,7 +15,7 @@
     android:textAppearance="?android:attr/textAppearanceLarge" />
 
 <GridView 
-    android:id="@+id/gridview"
+    android:id="@+id/gridview2"
     android:layout_below="@+id/BeastMode"
     android:layout_marginTop="30dp"
     android:layout_width="fill_parent" 
