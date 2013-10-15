@@ -4,20 +4,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,14 +15,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.beastmode2.classes.BeastImage;
 import com.beastmode2.classes.Stream;
@@ -46,7 +32,7 @@ public class ViewStream extends Activity{
     private LinearLayout main;
     static ArrayList<ImageView> images;
     static ArrayList imageURLs;
-    String streamID;
+    String streamID, streamname;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +45,16 @@ public class ViewStream extends Activity{
 		postData();
 		GridView gridview = (GridView) findViewById(R.id.gridview2);
 	    gridview.setAdapter(new ImageAdapter(this, images));
-
+	    
+	    final Button upload = (Button) findViewById(R.id.Upload);
+        upload.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent activityChangeIntent = new Intent(getBaseContext(), UploadImage.class);
+                activityChangeIntent.putExtra("id", streamID);
+                activityChangeIntent.putExtra("name", streamname);
+                startActivity(activityChangeIntent);
+            }
+        });
 
 	}
 
@@ -81,6 +76,12 @@ public class ViewStream extends Activity{
 		Map<Stream, List<BeastImage>> result = new HashMap<Stream, List<BeastImage>>();
 
 		result = gson.fromJson(string, new TypeToken<Map<Stream, List<BeastImage>>>(){}.getType() );
+		TextView streamName = (TextView) findViewById(R.id.ViewStream);
+		for(Stream str : result.keySet())
+		{
+			this.streamname = str.name;
+			streamName.setText("View A Stream: " + this.streamname);
+		}
 		
 		for(List<BeastImage> imageList : result.values())
 		{
