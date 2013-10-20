@@ -1,9 +1,15 @@
 package com.example.beastmode2;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,9 +24,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.beastmode2.classes.UploadedImage;
 
 public class UploadImage extends Activity{
     private static final String JPEG_FILE_SUFFIX = ".jpg";
@@ -45,6 +53,33 @@ public class UploadImage extends Activity{
         upload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
         		dispatchTakePictureIntent(11);
+            }
+        });
+		final Button imageUpload = (Button) findViewById(R.id.imageUploader);
+		imageUpload.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	if(mImageBitmap != null) {
+	        		final EditText additionalInfo = (EditText) findViewById(R.id.AdditionalInfo);
+	        		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	        		mImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+	        		byte[] byteArray = stream.toByteArray();
+	        		UploadedImage img = new UploadedImage(Long.parseLong(streamID), "Anonymous", additionalInfo.getText().toString(), byteArray);
+					try {
+						HttpClient httpClient = new DefaultHttpClient();
+
+
+					        HttpPost request = new HttpPost("http://ericissunny.appspot.com/api/upload");
+					        StringEntity params =new StringEntity(img.toJson());
+					        request.addHeader("content-type", "application/x-www-form-urlencoded");
+					        request.setEntity(params);
+					        httpClient.execute(request);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					finish();
+            	}
             }
         });
 	}
@@ -83,11 +118,7 @@ public class UploadImage extends Activity{
         Bundle extras = intent.getExtras();
         mImageBitmap = (Bitmap) extras.get("data");
         LayoutInflater inflater = LayoutInflater.from(this);
-        /*View view = inflater.inflate(R.layout.camera, null);
-
-        ImageView mImageView = (ImageView) view.findViewById(R.id.image);
-        mImageView.setImageBitmap(mImageBitmap);*/
-
+        
         File f = createImageFile();
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
 

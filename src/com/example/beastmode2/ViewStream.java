@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.beastmode2.classes.BeastImage;
@@ -28,10 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class ViewStream extends Activity{
-    private TextView streamsOutput;
-    private LinearLayout main;
     static ArrayList<ImageView> images;
-    static ArrayList imageURLs;
     String streamID, streamname;
     
     @Override
@@ -39,7 +35,6 @@ public class ViewStream extends Activity{
     	Intent myIntent= getIntent();
     	streamID = myIntent.getStringExtra("id"); 
     	images = new ArrayList<ImageView>();
-    	imageURLs = new ArrayList();
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.viewstream);
 		postData();
@@ -85,7 +80,6 @@ public class ViewStream extends Activity{
 		
 		for(List<BeastImage> imageList : result.values())
 		{
-	        int count = 0;
 			for(BeastImage image : imageList)
 			{
 				String urlString = image.bkUrl;
@@ -95,7 +89,6 @@ public class ViewStream extends Activity{
 	            ImageView imageView = new ImageView(this);
 	            imageView.setImageBitmap(bmp);
 	            images.add(imageView);
-	            count++;
 			}
 		}
 	        
