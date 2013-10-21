@@ -15,11 +15,11 @@
     android:textAppearance="?android:attr/textAppearanceLarge" />
 
 <GridView 
-    android:id="@+id/gridview"
-    android:layout_below="@+id/BeastMode"
-    android:layout_marginTop="30dp"
+    android:id="@+id/searchGridview"
+    android:layout_below="@+id/searchInfo"
+    android:layout_marginTop="20dp"
     android:layout_width="fill_parent" 
-    android:layout_height="270dp"
+    android:layout_height="fill_parent"
     android:layout_margin="10dp"
     android:columnWidth="80dp"
     android:numColumns="auto_fit"
@@ -29,40 +29,33 @@
     android:gravity="center"/>
 
 <EditText
-    android:id="@+id/searchText"
-    android:layout_width="200dp"
+    android:id="@+id/searchField"
+    android:layout_below="@+id/BeastMode"
+    android:layout_marginTop="20dp"
+    android:layout_width="wrap_content"
     android:layout_height="40dp"
-    android:layout_alignLeft="@+id/gridview"
-    android:layout_below="@+id/gridview"
+    android:layout_alignLeft="@+id/searchGridview"
     android:ems="10" >
 
     <requestFocus />
 </EditText>
 
 <Button
-    android:id="@+id/button2"
+    android:id="@+id/searchAgain"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignLeft="@+id/searchText"
-    android:layout_below="@+id/searchText"
-    android:text="Nearby" />
-
-<Button
-    android:id="@+id/searchStreams"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/searchText"
-    android:layout_alignBottom="@+id/searchText"
-    android:layout_toRightOf="@+id/BeastMode"
+    android:layout_height="40dp"
+    android:layout_alignTop="@+id/searchField"
+    android:layout_toRightOf="@+id/searchField"
     android:text="Search" />
 
-<Button
-    android:id="@+id/button3"
-    android:layout_width="wrap_content"
+<TextView
+    android:id="@+id/searchInfo"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/button2"
-    android:layout_alignBottom="@+id/button2"
-    android:layout_alignRight="@+id/searchStreams"
-    android:text="Subscribed Streams" />
+    android:layout_below="@+id/searchField"
+    android:layout_marginTop="15dp"
+    android:layout_alignLeft="@+id/searchGridview"
+    android:layout_alignRight="@+id/searchGridview"
+    android:text="sdfsdfds" />
 
 </RelativeLayout>

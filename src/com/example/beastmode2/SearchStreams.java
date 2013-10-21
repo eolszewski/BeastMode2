@@ -31,20 +31,25 @@ import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class ViewStreams extends Activity{
-    private TextView streamsOutput;
-    private LinearLayout main;
+public class SearchStreams extends Activity{
     static ArrayList<ImageView> images;
     static ArrayList imageIDs;
+    String query;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
     	images = new ArrayList<ImageView>();
     	imageIDs = new ArrayList();
+    	Intent myIntent= getIntent();
+    	query = myIntent.getStringExtra("query"); 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewstreams);
+		setContentView(R.layout.searchstreams);
 		postData();
-		GridView gridview = (GridView) findViewById(R.id.gridview);
+		final EditText searchQuery = (EditText) findViewById(R.id.searchField);
+		Button searchAgain = (Button) findViewById(R.id.searchAgain);
+		searchQuery.setText(query);
+		
+		GridView gridview = (GridView) findViewById(R.id.searchGridview);
 	    gridview.setAdapter(new ImageAdapter(this, images));
 
 	    gridview.setOnItemClickListener(new OnItemClickListener() {
@@ -54,16 +59,15 @@ public class ViewStreams extends Activity{
 	        	startActivity(myIntent);    
 	        }
 	    });
-	    final Button searchStreams = (Button) findViewById(R.id.searchStreams);
-	    final EditText searchText = (EditText) findViewById(R.id.searchText);
-	    searchText.setText("");
-	    searchStreams.setOnClickListener(new View.OnClickListener() {
+	    searchAgain.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+            	finish();
             	Intent myIntent = new Intent(getBaseContext(), SearchStreams.class);
-	        	myIntent.putExtra("query", searchText.getText().toString());
+	        	myIntent.putExtra("query", searchQuery.getText().toString());
 	        	startActivity(myIntent);   
         	}
         });
+		
 	}
 
 	@Override
@@ -75,7 +79,7 @@ public class ViewStreams extends Activity{
 	
 	public void postData() {
 	    try {
-		URL url = new URL("http://ericissunny.appspot.com/streamservlet?type=all");
+		URL url = new URL("http://ericissunny.appspot.com/streamservlet?type=search&query="+this.query);
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod("GET");
 		connection.connect();
@@ -105,6 +109,11 @@ public class ViewStreams extends Activity{
 	            count++;
 	            it.remove(); 
 	        }
+	        TextView searchInfo = (TextView) findViewById(R.id.searchInfo);
+	        if(count == 0)
+		        searchInfo.setText("No results found, please try another search");
+	        else
+	        	searchInfo.setText(count + " results for " + query + " click an image to view a stream");
 	        
 
 	    } catch (Exception e) {
