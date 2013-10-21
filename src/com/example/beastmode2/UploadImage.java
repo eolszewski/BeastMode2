@@ -2,7 +2,9 @@ package com.example.beastmode2;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -49,12 +51,23 @@ public class UploadImage extends Activity{
 
 		final TextView name = (TextView) findViewById(R.id.uploadStream);
 		name.setText("Stream: " + streamName);
+		
 		final Button upload = (Button) findViewById(R.id.CameraUpload);
         upload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
         		dispatchTakePictureIntent(11);
             }
         });
+        
+		final Button library = (Button) findViewById(R.id.Library);
+		library.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            	photoPickerIntent.setType("image/*");
+            	startActivityForResult(photoPickerIntent, 100);
+        	}
+        });
+		
 		final Button imageUpload = (Button) findViewById(R.id.imageUploader);
 		imageUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -90,28 +103,49 @@ public class UploadImage extends Activity{
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        try {
-            handleSmallCameraPhoto(data);
-    		Cursor cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, new String[]{Media.DATA, Media.DATE_ADDED, MediaStore.Images.ImageColumns.ORIENTATION}, Media.DATE_ADDED, null, "date_added ASC");
-            String photoPath = "";
-			if(cursor != null && cursor.moveToFirst())
-            {
-                do {
-                    Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(Media.DATA)));
-                    photoPath = uri.toString();
-                }while(cursor.moveToNext());
-                cursor.close();
+    	if(requestCode == 100) { 
+            if(resultCode == RESULT_OK){  
+                //Uri selectedImage = data.getData();
+				try {
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inSampleSize = 16;
+					
+					InputStream imageStream = getContentResolver().openInputStream(data.getData());
+					mImageBitmap = BitmapFactory.decodeStream(imageStream,null,options);
+	                ImageView mImageView = (ImageView) findViewById(R.id.imageUpload);
+	                mImageView.setImageBitmap(mImageBitmap);
+	                imageStream.close();
+				
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
-
-            if(photoPath != null) {
-                Bitmap bitmap = BitmapFactory.decodeFile(photoPath);
-                ///Do Implement your logic whatever you want.
-                ImageView mImageView = (ImageView) findViewById(R.id.imageUpload);
-                mImageView.setImageBitmap(bitmap);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    	else {
+	        try {
+	            handleSmallCameraPhoto(data);
+	    		Cursor cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, new String[]{Media.DATA, Media.DATE_ADDED, MediaStore.Images.ImageColumns.ORIENTATION}, Media.DATE_ADDED, null, "date_added ASC");
+	            String photoPath = "";
+				if(cursor != null && cursor.moveToFirst())
+	            {
+	                do {
+	                    Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(Media.DATA)));
+	                    photoPath = uri.toString();
+	                }while(cursor.moveToNext());
+	                cursor.close();
+	            }
+	
+	            if(photoPath != null) {
+	                Bitmap bitmap = BitmapFactory.decodeFile(photoPath);
+	                ///Do Implement your logic whatever you want.
+	                ImageView mImageView = (ImageView) findViewById(R.id.imageUpload);
+	                mImageView.setImageBitmap(bitmap);
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+    	}
     }
 
     private void handleSmallCameraPhoto(Intent intent) throws IOException {
