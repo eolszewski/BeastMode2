@@ -55,12 +55,27 @@ public class ViewStreams extends Activity{
 	        }
 	    });
 	    final Button searchStreams = (Button) findViewById(R.id.searchStreams);
+	    final Button nearbyImages = (Button) findViewById(R.id.nearbyImages);
+	    final Button subscribedStreams = (Button) findViewById(R.id.subscribedStreams);
 	    final EditText searchText = (EditText) findViewById(R.id.searchText);
 	    searchText.setText("");
 	    searchStreams.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	Intent myIntent = new Intent(getBaseContext(), SearchStreams.class);
 	        	myIntent.putExtra("query", searchText.getText().toString());
+	        	startActivity(myIntent);   
+        	}
+        });
+	    nearbyImages.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Intent myIntent = new Intent(getBaseContext(), NearbyImages.class);
+	        	startActivity(myIntent);   
+        	}
+        });
+	    subscribedStreams.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Intent myIntent = new Intent(getBaseContext(), ViewSubscribed.class);
+	        	myIntent.putExtra("userID", "bstew92");
 	        	startActivity(myIntent);   
         	}
         });
